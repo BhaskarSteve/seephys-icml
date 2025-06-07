@@ -10,8 +10,8 @@ from argparse import ArgumentParser
 
 load_dotenv()
 parser = ArgumentParser()
-parser.add_argument('--router', type=str, default='OpenRouter')
-parser.add_argument('--model', type=str, default='google/gemma-3-4b-it:free')
+parser.add_argument('--router', type=str, default='AIStudio')
+parser.add_argument('--model', type=str, default='gemini-2.5-flash-preview-05-20')
 parser.add_argument('--input_file', type=str, default='mini.json')
 parser.add_argument('--output_file', type=str, default='prediction.json')
 args = parser.parse_args()
@@ -21,7 +21,7 @@ if args.router == 'OpenRouter':
     client.api_key=os.getenv('OPENROUTER_API_KEY')
     client.base_url='https://openrouter.ai/api/v1'
 elif args.router == 'AIStudio':
-    client.api_key=os.getenv('AISTUDIO_API_KEY')
+    client.api_key=os.getenv('GEMINI_API_KEY')
     client.base_url='https://generativelanguage.googleapis.com/v1beta/openai/'
 elif args.router == 'OpenAI':
     client.api_key=os.getenv('OPENAI_API_KEY')
@@ -65,7 +65,7 @@ def run_inference(json_path, output_path, model):
         question, img_paths= build_prompt(input_item)
         base64_images = [encode_image(img_path) for img_path in img_paths]
         response = ""  
-        print(question)
+        # print(question)
         max_retries = 5
         retry_delay = 30
         attempt = 0
@@ -124,7 +124,7 @@ def inference_one_step(question, base64_images, model):
                 max_tokens=64000,
             )
     response = payload.choices[0].message.content
-    print(response)
+    # print(response)
     return response
 
 if __name__ == '__main__':
