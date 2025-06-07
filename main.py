@@ -1,14 +1,34 @@
+import os
 import json
 import time
 import base64
-from os.path import join
+from dotenv import load_dotenv
 from tqdm import tqdm
 from loguru import logger
 from openai import OpenAI
+from argparse import ArgumentParser
+
+load_dotenv()
+parser = ArgumentParser()
+parser.add_argument('--router', type=str, default='OpenRouter')
+parser.add_argument('--model', type=str, default='google/gemma-3-4b-it:free')
+parser.add_argument('--input_file', type=str, default='mini.json')
+parser.add_argument('--output_file', type=str, default='prediction.json')
+args = parser.parse_args()
 
 client=OpenAI(api_key='<KEY>')
-client.api_key='your_api_key'
-client.base_url='your_base_url'
+if args.router == 'OpenRouter':
+    client.api_key=os.getenv('OPENROUTER_API_KEY')
+    client.base_url='https://openrouter.ai/api/v1'
+elif args.router == 'AIStudio':
+    client.api_key=os.getenv('AISTUDIO_API_KEY')
+    client.base_url='https://generativelanguage.googleapis.com/v1beta/openai/'
+elif args.router == 'OpenAI':
+    client.api_key=os.getenv('OPENAI_API_KEY')
+    client.base_url='https://api.openai.com/v1/'
+elif args.router == 'Anthropic':
+    client.api_key=os.getenv('ANTHROPIC_API_KEY')
+    client.base_url='https://api.anthropic.com/v1/'
 
 def build_prompt(item):
     tgt_path = item['image_path']
@@ -101,7 +121,7 @@ def inference_one_step(question, base64_images, model):
             ]
                     },
                 ],
-                max_tokens=128000,
+                max_tokens=64000,
             )
     response = payload.choices[0].message.content
     print(response)
@@ -109,4 +129,4 @@ def inference_one_step(question, base64_images, model):
 
 if __name__ == '__main__':
     # 'dev.json', 'total.json'
-    run_inference('mini.json', 'prediction.json', model='your_model')
+    run_inference(args.input_file, args.output_file, model=args.model)
