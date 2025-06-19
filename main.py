@@ -121,7 +121,7 @@ def inference_one_step(question, base64_images, model):
             ]
                     },
                 ],
-                max_tokens=64000,
+                max_completion_tokens=64000,
             )
     response = payload.choices[0].message.content
     # print(response)

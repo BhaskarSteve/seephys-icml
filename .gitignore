@@ -3,3 +3,6 @@ images/
 CLAUDE.md
 .venv/
 .env
+.DS_Store
+plan.md
+*.zip
